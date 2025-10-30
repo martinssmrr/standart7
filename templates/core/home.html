@@ -1,0 +1,431 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Standart 7 - Lançamentos Imobiliários{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="relative min-h-screen flex items-center justify-center overflow-hidden" style="margin-top: -80px;">
+    <!-- Background Image -->
+    <div class="absolute inset-0 z-0">
+        {% if hero and hero.imagem_fundo %}
+            <img src="{{ hero.imagem_fundo.url }}" alt="{{ hero.titulo }}" class="w-full h-full object-cover">
+        {% else %}
+            <img src="{% static 'img/home.jpg' %}" alt="Investimento Imobiliário" class="w-full h-full object-cover">
+        {% endif %}
+    </div>
+    
+    <!-- Overlay -->
+    <div class="absolute inset-0 bg-black bg-opacity-60 z-10"></div>
+    
+    <!-- Content -->
+    <div class="relative z-20 container mx-auto px-4 text-center py-20">
+        <h1 class="text-4xl md:text-5xl lg:text-7xl font-bold mb-4 md:mb-6" style="color: #eacda3;">
+            {{ hero.titulo|default:"Seu Próximo Investimento de Sucesso" }}
+        </h1>
+        <h4 class="text-lg md:text-xl lg:text-2xl font-light mb-8 md:mb-12 max-w-4xl mx-auto leading-relaxed" style="color: #eacda3;">
+            {{ hero.subtitulo|default:"Dados comprovam: a valorização que você busca, no lugar certo e no momento certo." }}
+        </h4>
+        
+        <!-- CTAs -->
+        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <a href="https://wa.me/5577999106220?text=Ol%C3%A1%2C%20gostaria%20de%20saber%20mais%20sobre%20os%20investimentos%20imobili%C3%A1rios." 
+               target="_blank" 
+               rel="noopener noreferrer"
+               class="w-full sm:w-auto px-8 py-4 rounded-lg font-semibold text-white transition-all duration-300 hover:scale-105 hover:shadow-xl" 
+               style="background: linear-gradient(135deg, #d4a574 0%, #eacda3 100%);">
+                {{ hero.texto_botao|default:"Consultoria Especializada" }}
+            </a>
+            <a href="#lancamentos" class="w-full sm:w-auto px-8 py-4 rounded-lg font-semibold transition-all duration-300 hover:scale-105 border-2 hover:bg-opacity-10" style="color: #eacda3; border-color: #eacda3; background-color: rgba(234, 205, 163, 0.05);">
+                Ver Portfólio de Investimentos
+            </a>
+        </div>
+    </div>
+    
+    <!-- Scroll Indicator -->
+    <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10 animate-bounce">
+        <a href="#lancamentos" class="flex flex-col items-center" style="color: #eacda3;">
+            <!-- <span class="text-sm mb-2">Role para explorar</span> -->
+            <i class="fas fa-chevron-down text-2xl"></i>
+        </a>
+    </div>
+</section>
+
+<!-- Linha do Tempo Vertical dos Empreendimentos -->
+<section id="lancamentos" class="relative py-20 overflow-hidden" style="background-color: #f8f9fa;">
+    <!-- Background com Imagem e Overlay -->
+    <div class="absolute inset-0 z-0">
+        <div class="absolute inset-0" style="background-image: url('{% static 'img/lancamentos.png' %}'); background-size: cover; background-position: center; background-repeat: no-repeat; opacity: 0.40;"></div>
+        <div class="absolute inset-0" style="background: linear-gradient(135deg, rgba(255,255,255,0.7) 0%, rgba(248,249,250,0.8) 100%);"></div>
+    </div>
+    
+    <div class="container mx-auto px-4 relative z-10">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4" style="color: #2c3e50;">Nossos Empreendimentos</h2>
+            <p class="text-gray-600 text-lg">Uma jornada de sucesso e inovação no mercado imobiliário</p>
+        </div>
+
+        {% if lancamentos %}
+        <div class="relative max-w-6xl mx-auto">
+            <!-- Linha Central Vertical -->
+            <div class="hidden md:block absolute left-1/2 transform -translate-x-1/2 w-1 h-full" style="background: linear-gradient(180deg, #d4a574 0%, #eacda3 100%);"></div>
+            
+            {% for lancamento in lancamentos %}
+            <div class="relative mb-20 last:mb-0">
+                <!-- Cabeçalho do Empreendimento -->
+                <div class="text-center mb-8 md:mb-12">
+                    <div class="mb-6">
+                        <div class="inline-block px-8 py-4 rounded-2xl shadow-lg mb-4" style="background: linear-gradient(135deg, #d4a574 0%, #eacda3 100%);">
+                            <h3 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white">
+                                {{ lancamento.titulo }}
+                            </h3>
+                        </div>
+                        <div class="w-32 h-1 mx-auto rounded-full" style="background: linear-gradient(135deg, #d4a574 0%, #eacda3 100%);"></div>
+                    </div>
+                    
+                    <div class="flex justify-center items-center gap-4 flex-wrap text-sm">
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border-2 shadow-md bg-white" style="border-color: #d4a574;">
+                            <i class="fas fa-map-marker-alt" style="color: #d4a574;"></i>
+                            <span class="font-semibold" style="color: #2c3e50;">{{ lancamento.bairro }}, {{ lancamento.cidade }}</span>
+                        </div>
+                        
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border-2 shadow-md bg-white" style="border-color: #d4a574;">
+                            <i class="fas fa-circle text-xs animate-pulse" style="color: #d4a574;"></i>
+                            <span class="font-semibold" style="color: #2c3e50;">{{ lancamento.get_status_display }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Galeria de Imagens Alternadas -->
+                <div class="space-y-12">
+                    {% if lancamento.galeria_imagens.all %}
+                        {% for imagem in lancamento.galeria_imagens.all %}
+                        <div class="{% cycle 'md:pr-[50%] md:mr-8' 'md:pl-[50%] md:ml-8' %} {% if forloop.counter|divisibleby:2 %}md:text-left{% else %}md:text-right{% endif %}">
+                            <div class="group relative rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:scale-[1.02]">
+                                <a href="{% url 'core:lancamento_detail' lancamento.slug %}" class="block">
+                                    <!-- Imagem -->
+                                    <div class="relative overflow-hidden" style="padding-bottom: 66.67%;">
+                                        <img src="{{ imagem.imagem.url }}" 
+                                             alt="{{ imagem.legenda|default:lancamento.titulo }}" 
+                                             class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                             loading="lazy">
+                                        
+                                        <!-- Overlay no Hover -->
+                                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                        
+                                        <!-- Texto no Hover -->
+                                        <div class="absolute inset-0 flex items-end p-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                            <div class="text-white">
+                                                {% if imagem.legenda %}
+                                                <p class="text-lg font-semibold mb-2">{{ imagem.legenda }}</p>
+                                                {% endif %}
+                                                <div class="flex items-center gap-2 text-sm">
+                                                    <span>Ver detalhes completos</span>
+                                                    <i class="fas fa-arrow-right"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Badge de Número da Imagem -->
+                                    <div class="absolute top-4 {% if forloop.counter|divisibleby:2 %}right-4{% else %}left-4{% endif %} bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full shadow-md">
+                                        <span class="text-xs font-bold" style="color: #d4a574;">{{ forloop.counter }}/{{ lancamento.galeria_imagens.count }}</span>
+                                    </div>
+                                </a>
+                            </div>
+                            
+                            <!-- Legenda (se existir) -->
+                            {% if imagem.legenda %}
+                            <div class="mt-4 px-4">
+                                <p class="text-gray-600 italic">{{ imagem.legenda }}</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <!-- Caso não tenha imagens na galeria, mostra a imagem principal -->
+                        <div class="max-w-3xl mx-auto">
+                            <div class="group relative rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500">
+                                <a href="{% url 'core:lancamento_detail' lancamento.slug %}" class="block">
+                                    <div class="relative overflow-hidden" style="padding-bottom: 66.67%;">
+                                        {% if lancamento.imagem_principal %}
+                                        <img src="{{ lancamento.imagem_principal.url }}" 
+                                             alt="{{ lancamento.titulo }}" 
+                                             class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                             loading="lazy">
+                                        {% else %}
+                                        <div class="absolute inset-0 bg-gradient-to-br from-gray-300 to-gray-400 flex items-center justify-center">
+                                            <i class="fas fa-building text-8xl text-gray-500"></i>
+                                        </div>
+                                        {% endif %}
+                                        
+                                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                        
+                                        <div class="absolute inset-0 flex items-end p-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                            <div class="text-white">
+                                                <p class="text-lg font-semibold mb-2">Imagem Principal</p>
+                                                <div class="flex items-center gap-2 text-sm">
+                                                    <span>Ver detalhes completos</span>
+                                                    <i class="fas fa-arrow-right"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Link para Ver Mais -->
+                <div class="text-center mt-8">
+                    <a href="{% url 'core:lancamento_detail' lancamento.slug %}" 
+                       class="inline-flex items-center gap-2 px-8 py-4 rounded-lg font-semibold text-white transition-all duration-300 hover:scale-105 hover:shadow-xl" 
+                       style="background: linear-gradient(135deg, #616668 0%, #616668 100%);">
+                        <span>Ver Todos os Detalhes</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-20">
+            <i class="fas fa-home text-8xl mb-6" style="color: #d4a574;"></i>
+            <h3 class="text-2xl font-bold text-gray-800 mb-3">Em Breve, Novos Empreendimentos</h3>
+            <p class="text-gray-600 text-lg">Estamos preparando lançamentos exclusivos para você.</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Sobre a Standart7 Section -->
+<section id="sobre" class="py-20" style="background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl md:text-5xl font-bold mb-4" style="color: #2c3e50;">{{ sobre.titulo|default:"Nossa História" }}</h2>
+            <div class="w-24 h-1 mx-auto" style="background: linear-gradient(135deg, #d4a574 0%, #eacda3 100%);"></div>
+        </div>
+
+        <!-- Layout Desktop: 3 Colunas -->
+        <div class="hidden lg:grid lg:grid-cols-3 gap-12 items-center max-w-7xl mx-auto">
+            <!-- Coluna Esquerda - Camila -->
+            <div class="flex justify-center">
+                <div class="relative">
+                    <div class="absolute inset-0 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full blur-2xl opacity-20"></div>
+                    {% if sobre and sobre.foto_fundadora %}
+                        <img src="{{ sobre.foto_fundadora.url }}" 
+                             alt="Foto de {{ sobre.nome_fundadora }}" 
+                             class="relative rounded-full w-64 h-64 object-cover shadow-2xl border-4 border-white">
+                    {% else %}
+                        <img src="{% static 'img/camila2.png' %}" 
+                             alt="Foto de Camilla Daianne, fundadora da Standart7" 
+                             class="relative rounded-full w-64 h-64 object-cover shadow-2xl border-4 border-white">
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Coluna Central - Texto -->
+            <div class="text-center px-6">
+                <p class="text-lg text-gray-700 leading-relaxed mb-6">
+                    <strong style="color: #d4a574;">{{ sobre.nome_fundadora|default:"Camilla Daianne" }}</strong> {{ sobre.texto_fundadora|default:"antecipou o potencial do mercado imobiliário do Oeste da Bahia em 2018. Com expertise em administração, coaching e consultoria, ela dedicou-se a aprimorar o conhecimento para atender a uma única demanda: o investimento inteligente." }}
+                </p>
+                <p class="text-lg text-gray-700 leading-relaxed">
+                    <strong style="color: #d4a574;">{{ sobre.nome_fundador|default:"Marlon Deivison" }}</strong> {{ sobre.texto_fundador|default:"injetou o DNA da inovação. Apaixonado por Marketing e Vendas, ele transformou o cenário regional a partir de 2021, elevando a operação para o digital. Juntos, eles criaram processos que tornaram o investimento mais rápido, acessível e totalmente seguro, sem jamais perder o foco no relacionamento humano." }}
+                </p>
+            </div>
+
+            <!-- Coluna Direita - Marlon -->
+            <div class="flex justify-center">
+                <div class="relative">
+                    <div class="absolute inset-0 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full blur-2xl opacity-20"></div>
+                    {% if sobre and sobre.foto_fundador %}
+                        <img src="{{ sobre.foto_fundador.url }}" 
+                             alt="Foto de {{ sobre.nome_fundador }}" 
+                             class="relative rounded-full w-64 h-64 object-cover shadow-2xl border-4 border-white">
+                    {% else %}
+                        <img src="{% static 'img/marlon.jpg' %}" 
+                             alt="Foto de Marlon Deivison, fundador da Standart7" 
+                             class="relative rounded-full w-64 h-64 object-cover shadow-2xl border-4 border-white">
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Layout Mobile/Tablet: Empilhado -->
+        <div class="lg:hidden flex flex-col items-center space-y-8 max-w-2xl mx-auto">
+            <!-- Camila -->
+            <div class="text-center">
+                <div class="relative inline-block mb-6">
+                    <div class="absolute inset-0 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full blur-2xl opacity-20"></div>
+                    {% if sobre and sobre.foto_fundadora %}
+                        <img src="{{ sobre.foto_fundadora.url }}" 
+                             alt="Foto de {{ sobre.nome_fundadora }}" 
+                             class="relative rounded-full w-48 h-48 md:w-56 md:h-56 object-cover shadow-2xl border-4 border-white mx-auto">
+                    {% else %}
+                        <img src="{% static 'img/camila2.png' %}" 
+                             alt="Foto de Camilla Daianne, fundadora da Standart7" 
+                             class="relative rounded-full w-48 h-48 md:w-56 md:h-56 object-cover shadow-2xl border-4 border-white mx-auto">
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Texto -->
+            <div class="text-center px-4">
+                <p class="text-base md:text-lg text-gray-700 leading-relaxed mb-6">
+                    <strong style="color: #d4a574;">{{ sobre.nome_fundadora|default:"Camilla Daianne" }}</strong> {{ sobre.texto_fundadora|default:"antecipou o potencial do mercado imobiliário do Oeste da Bahia em 2018. Com expertise em administração, coaching e consultoria, ela dedicou-se a aprimorar o conhecimento para atender a uma única demanda: o investimento inteligente." }}
+                </p>
+                <p class="text-base md:text-lg text-gray-700 leading-relaxed">
+                    <strong style="color: #d4a574;">{{ sobre.nome_fundador|default:"Marlon Deivison" }}</strong> {{ sobre.texto_fundador|default:"injetou o DNA da inovação. Apaixonado por Marketing e Vendas, ele transformou o cenário regional a partir de 2021, elevando a operação para o digital. Juntos, eles criaram processos que tornaram o investimento mais rápido, acessível e totalmente seguro, sem jamais perder o foco no relacionamento humano." }}
+                </p>
+            </div>
+
+            <!-- Marlon -->
+            <div class="text-center">
+                <div class="relative inline-block mt-6">
+                    <div class="absolute inset-0 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full blur-2xl opacity-20"></div>
+                    {% if sobre and sobre.foto_fundador %}
+                        <img src="{{ sobre.foto_fundador.url }}" 
+                             alt="Foto de {{ sobre.nome_fundador }}" 
+                             class="relative rounded-full w-48 h-48 md:w-56 md:h-56 object-cover shadow-2xl border-4 border-white mx-auto">
+                    {% else %}
+                        <img src="{% static 'img/marlon.jpg' %}" 
+                             alt="Foto de Marlon Deivison, fundador da Standart7" 
+                             class="relative rounded-full w-48 h-48 md:w-56 md:h-56 object-cover shadow-2xl border-4 border-white mx-auto">
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contato Section -->
+<section id="contato" class="py-20" style="background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl md:text-5xl font-bold mb-4" style="color: #2c3e50;">Entre em Contato</h2>
+            <div class="w-24 h-1 mx-auto mb-4" style="background: linear-gradient(135deg, #d4a574 0%, #eacda3 100%);"></div>
+            <p class="text-gray-600 text-lg">Estamos prontos para atendê-lo com excelência</p>
+        </div>
+
+        <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-2xl p-8 md:p-12 border-t-4" style="border-top-color: #d4a574;">
+            <form id="contatoForm" class="space-y-6">
+                <div>
+                    <label class="block font-semibold mb-2" style="color: #2c3e50;">
+                        <i class="fas fa-user mr-2" style="color: #d4a574;"></i>Nome Completo
+                    </label>
+                    <input type="text" id="nome" name="nome" required 
+                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl transition-all duration-300"
+                           style="outline: none;"
+                           onfocus="this.style.borderColor='#d4a574'; this.style.boxShadow='0 0 0 3px rgba(212, 165, 116, 0.1)'"
+                           onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'"
+                           placeholder="Seu nome completo">
+                </div>
+                
+                <div>
+                    <label class="block font-semibold mb-2" style="color: #2c3e50;">
+                        <i class="fas fa-envelope mr-2" style="color: #d4a574;"></i>E-mail
+                    </label>
+                    <input type="email" id="email" name="email" required 
+                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl transition-all duration-300"
+                           style="outline: none;"
+                           onfocus="this.style.borderColor='#d4a574'; this.style.boxShadow='0 0 0 3px rgba(212, 165, 116, 0.1)'"
+                           onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'"
+                           placeholder="seu@email.com">
+                </div>
+                
+                <div>
+                    <label class="block font-semibold mb-2" style="color: #2c3e50;">
+                        <i class="fas fa-phone mr-2" style="color: #d4a574;"></i>Telefone
+                    </label>
+                    <input type="tel" id="telefone" name="telefone" required 
+                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl transition-all duration-300"
+                           style="outline: none;"
+                           onfocus="this.style.borderColor='#d4a574'; this.style.boxShadow='0 0 0 3px rgba(212, 165, 116, 0.1)'"
+                           onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'"
+                           placeholder="(77) 99999-9999">
+                </div>
+                
+                <div>
+                    <label class="block font-semibold mb-2" style="color: #2c3e50;">
+                        <i class="fas fa-comment-dots mr-2" style="color: #d4a574;"></i>Mensagem
+                    </label>
+                    <textarea rows="5" id="mensagem" name="mensagem" required 
+                              class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl transition-all duration-300 resize-none"
+                              style="outline: none;"
+                              onfocus="this.style.borderColor='#d4a574'; this.style.boxShadow='0 0 0 3px rgba(212, 165, 116, 0.1)'"
+                              onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'"
+                              placeholder="Digite sua mensagem aqui..."></textarea>
+                </div>
+
+                <button type="submit" 
+                        class="w-full px-8 py-4 rounded-xl font-bold text-lg text-white transition-all duration-300 transform hover:scale-105 hover:shadow-2xl flex items-center justify-center gap-3"
+                        style="background: linear-gradient(135deg, #d4a574 0%, #eacda3 100%);">
+                    <i class="fab fa-whatsapp text-2xl"></i>
+                    <span>Enviar Mensagem via WhatsApp</span>
+                </button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Funcionalidade do formulário de contato - Enviar para WhatsApp
+    document.getElementById('contatoForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Coletar dados do formulário
+        const nome = document.getElementById('nome').value;
+        const email = document.getElementById('email').value;
+        const telefone = document.getElementById('telefone').value;
+        const mensagem = document.getElementById('mensagem').value;
+        
+        // Montar mensagem para WhatsApp
+        const textoWhatsApp = `*Novo Contato - Site Standart 7*%0A%0A` +
+                             `*Nome:* ${encodeURIComponent(nome)}%0A` +
+                             `*E-mail:* ${encodeURIComponent(email)}%0A` +
+                             `*Telefone:* ${encodeURIComponent(telefone)}%0A%0A` +
+                             `*Mensagem:*%0A${encodeURIComponent(mensagem)}`;
+        
+        // URL do WhatsApp
+        const whatsappURL = `https://wa.me/5577999106220?text=${textoWhatsApp}`;
+        
+        // Abrir WhatsApp em nova aba
+        window.open(whatsappURL, '_blank');
+        
+        // Opcional: Limpar formulário após envio
+        this.reset();
+    });
+</script>
+
+<!-- Botão Flutuante do WhatsApp -->
+<a href="https://api.whatsapp.com/send/?phone=5577999106220&text=Ol%C3%A1%2C+gostaria+de+saber+mais+sobre+os+investimentos+imobili%C3%A1rios.&type=phone_number&app_absent=0" 
+   target="_blank" 
+   rel="noopener noreferrer"
+   class="fixed bottom-6 right-6 z-50 w-16 h-16 rounded-full flex items-center justify-center shadow-2xl transition-all duration-300 hover:scale-110 hover:shadow-3xl animate-pulse"
+   style="background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);"
+   title="Fale conosco pelo WhatsApp">
+    <i class="fab fa-whatsapp text-white text-3xl"></i>
+</a>
+
+<style>
+    /* Animação suave para o botão WhatsApp */
+    @keyframes pulse-whatsapp {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.05);
+        }
+    }
+    
+    .animate-pulse {
+        animation: pulse-whatsapp 2s infinite;
+    }
+    
+    .hover\:shadow-3xl:hover {
+        box-shadow: 0 25px 50px -12px rgba(37, 211, 102, 0.5);
+    }
+</style>
+
+{% endblock %}

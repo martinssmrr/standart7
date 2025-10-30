@@ -1,0 +1,116 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Standart 7 - Imobiliária{% endblock %}</title>
+
+    <!-- Favicon png -->
+    <link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}">
+    
+    
+    <!-- TailwindCSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome para ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="bg-gray-50 flex flex-col min-h-screen">
+    
+    <!-- Header -->
+    <header id="navbar" class="fixed top-0 w-full z-50 transition-all duration-300">
+        <nav class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <a href="{% url 'core:home' %}" class="flex items-center order-3 md:order-3">
+                    {% load static %}
+                    <img src="{% static 'img/logo.png' %}" alt="Standart 7 Logo" class="h-12 md:h-16 w-auto object-contain">
+                </a>
+                <ul class="flex space-x-6 mx-auto order-2">
+                    <li><a href="{% url 'core:home' %}" class="nav-link transition">Início</a></li>
+                    <!-- <li><a href="#lancamentos" class="nav-link transition">Lançamentos</a></li>
+                    <li><a href="#sobre" class="nav-link transition">Nossa História</a></li> -->
+                    <li><a href="{% url 'core:diferenciais' %}" class="nav-link transition">Diferenciais Standart7</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    
+    <script>
+        // Navbar scroll behavior
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            if (window.scrollY > 50) {
+                navbar.classList.add('bg-white', 'shadow-md');
+                navbar.classList.remove('bg-transparent');
+                navLinks.forEach(link => {
+                    link.classList.remove('text-white');
+                    link.classList.add('text-gray-700', 'hover:text-blue-600');
+                });
+            } else {
+                navbar.classList.remove('bg-white', 'shadow-md');
+                navbar.classList.add('bg-transparent');
+                navLinks.forEach(link => {
+                    link.classList.add('text-white');
+                    link.classList.remove('text-gray-700', 'hover:text-blue-600');
+                });
+            }
+        });
+        
+        // Inicializar estado da navbar
+        window.dispatchEvent(new Event('scroll'));
+    </script>
+
+    <!-- Main Content -->
+    <main class="flex-grow">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white mt-12">
+        <div class="container mx-auto px-4 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Sobre -->
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Standart 7</h3>
+                    <p class="text-gray-400 mb-4">Especialistas em investimentos imobiliários.</p>
+                    <img src="{% static 'img/logo.png' %}" alt="Logo Standart 7" class="h-16 w-auto object-contain">
+                </div>
+                
+                <!-- Links Rápidos -->
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Links Rápidos</h3>
+                    <ul class="space-y-2">
+                        <li><a href="{% url 'core:home' %}" class="text-gray-400 hover:text-white transition">Home</a></li>
+                        <li><a href="#lancamentos" class="text-gray-400 hover:text-white transition">Lançamentos</a></li>
+                        <li><a href="#contato" class="text-gray-400 hover:text-white transition">Contato</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Contato -->
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Contato</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><i class="fas fa-phone"></i> (77) 99910-6220</li>
+                        <li><i class="fas fa-envelope"></i> adm@standard7.com.br</li>
+                        <li><i class="fas fa-map-marker-alt"></i> Barreiras, BA</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-8 pt-6 text-center text-gray-400">
+                <p>&copy; {{ current_year|default:"2025" }} Prisma Dev. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
+
+
+

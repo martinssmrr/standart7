@@ -1,0 +1,382 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ lancamento.titulo }} - Standart 7{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Força a navbar a ter fundo branco e links pretos nesta página */
+    #navbar {
+        background-color: white !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+    }
+    
+    .nav-link {
+        color: #1f2937 !important;
+    }
+    
+    .nav-link:hover {
+        color: #d4a574 !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Banner Principal -->
+<section class="relative h-96 md:h-[500px] overflow-hidden">
+    {% if lancamento.imagem_principal %}
+    <img src="{{ lancamento.imagem_principal.url }}" 
+         alt="{{ lancamento.titulo }}" 
+         class="w-full h-full object-cover">
+    {% else %}
+    <div class="w-full h-full bg-gradient-to-r from-[#eacda3] to-[#d4a574] flex items-center justify-center">
+        <i class="fas fa-building text-9xl text-white opacity-50"></i>
+    </div>
+    {% endif %}
+    
+    <!-- Overlay com título -->
+    <div class="absolute inset-0 flex items-center justify-center" style="background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.6));">
+        <div class="text-center text-white px-4">
+            <h1 class="text-4xl md:text-6xl font-bold mb-4 drop-shadow-lg">{{ lancamento.titulo }}</h1>
+            <div class="flex items-center justify-center text-xl mb-2">
+                <i class="fas fa-map-marker-alt mr-2"></i>
+                <span>{{ lancamento.bairro }}, {{ lancamento.cidade }}</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Badge de Status -->
+    <div class="absolute top-8 right-8">
+        <span class="px-6 py-3 rounded-full text-lg font-bold shadow-xl border-2 border-white
+            {% if lancamento.status == 'breve' %}text-white
+            {% elif lancamento.status == 'obras' %}text-white
+            {% else %}text-white{% endif %}"
+            style="background: linear-gradient(135deg, #d4a574 0%, #eacda3 100%);">
+            {{ lancamento.get_status_display }}
+        </span>
+    </div>
+</section>
+
+<!-- Breadcrumb -->
+<section class="py-4" style="background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);">
+    <div class="container mx-auto px-4">
+        <nav class="flex items-center text-gray-600">
+            <a href="{% url 'core:home' %}" class="hover:text-[#d4a574] transition">Home</a>
+            <i class="fas fa-chevron-right mx-3 text-sm"></i>
+            <a href="{% url 'core:home' %}#lancamentos" class="hover:text-[#d4a574] transition">Lançamentos</a>
+            <i class="fas fa-chevron-right mx-3 text-sm"></i>
+            <span class="font-semibold" style="color: #2c3e50;">{{ lancamento.titulo }}</span>
+        </nav>
+    </div>
+</section>
+
+<!-- Conteúdo Principal -->
+<section class="py-16" style="background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Coluna Principal -->
+            <div class="lg:col-span-2">
+                <!-- Galeria de Imagens -->
+                {% if lancamento.galeria_imagens.all %}
+                <div class="bg-white rounded-2xl shadow-2xl p-8 mb-8 border-t-4" style="border-top-color: #d4a574;">
+                    <div class="flex items-center mb-6">
+                        <i class="fas fa-images text-3xl mr-3" style="color: #d4a574;"></i>
+                        <h2 class="text-3xl font-bold" style="color: #2c3e50;">Galeria de Imagens</h2>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {% for imagem in lancamento.galeria_imagens.all %}
+                        <div class="relative group overflow-hidden rounded-xl shadow-lg cursor-pointer" onclick="openLightbox({{ forloop.counter0 }})">
+                            <img src="{{ imagem.imagem.url }}" 
+                                 alt="{{ imagem.legenda|default:lancamento.titulo }}" 
+                                 class="w-full h-72 object-cover transform group-hover:scale-110 transition duration-500">
+                            {% if imagem.legenda %}
+                            <div class="absolute bottom-0 left-0 right-0 text-white p-4 transform translate-y-full group-hover:translate-y-0 transition duration-300" style="background: linear-gradient(to top, rgba(212, 165, 116, 0.95), transparent);">
+                                <p class="text-sm font-semibold">{{ imagem.legenda }}</p>
+                            </div>
+                            {% endif %}
+                            <!-- Ícone de Zoom -->
+                            <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black bg-opacity-30">
+                                <i class="fas fa-search-plus text-white text-4xl"></i>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Descrição -->
+                <div class="bg-white rounded-2xl shadow-2xl p-8 mb-8 border-t-4" style="border-top-color: #d4a574;">
+                    <div class="flex items-center mb-6">
+                        <i class="fas fa-info-circle text-3xl mr-3" style="color: #d4a574;"></i>
+                        <h2 class="text-3xl font-bold" style="color: #2c3e50;">Sobre o Empreendimento</h2>
+                    </div>
+                    <div class="text-gray-700 leading-relaxed text-lg whitespace-pre-line">
+                        {{ lancamento.descricao_completa }}
+                    </div>
+                </div>
+
+            <!-- Informações Adicionais -->
+            <div class="bg-white rounded-2xl shadow-2xl p-8 border-t-4" style="border-top-color: #d4a574;">
+                <div class="flex items-center mb-6">
+                    <i class="fas fa-clipboard-list text-3xl mr-3" style="color: #d4a574;"></i>
+                    <h2 class="text-3xl font-bold" style="color: #2c3e50;">Informações</h2>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="flex items-center p-4 rounded-xl transition-all duration-300 hover:shadow-lg" style="background: linear-gradient(135deg, #f9f9f9 0%, #ffffff 100%);">
+                        <div class="rounded-full p-4 mr-4 shadow-md" style="background: linear-gradient(135deg, #eacda3 0%, #d4a574 100%);">
+                            <i class="fas fa-map-marker-alt text-2xl text-white"></i>
+                        </div>
+                        <div>
+                            <p class="text-gray-600 text-sm font-semibold">Localização</p>
+                            <p class="font-bold text-lg" style="color: #2c3e50;">{{ lancamento.bairro }}, {{ lancamento.cidade }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center p-4 rounded-xl transition-all duration-300 hover:shadow-lg" style="background: linear-gradient(135deg, #f9f9f9 0%, #ffffff 100%);">
+                        <div class="rounded-full p-4 mr-4 shadow-md" style="background: linear-gradient(135deg, #eacda3 0%, #d4a574 100%);">
+                            <i class="fas fa-hard-hat text-2xl text-white"></i>
+                        </div>
+                        <div>
+                            <p class="text-gray-600 text-sm font-semibold">Status da Obra</p>
+                            <p class="font-bold text-lg" style="color: #2c3e50;">{{ lancamento.get_status_display }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar - Formulário de Contato -->
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-2xl shadow-2xl p-8 sticky top-24 border-t-4" style="border-top-color: #d4a574;">
+                <div class="flex items-center mb-6">
+                    <i class="fas fa-heart text-3xl mr-3" style="color: #d4a574;"></i>
+                    <h3 class="text-2xl font-bold" style="color: #2c3e50;">Tenho Interesse</h3>
+                </div>
+                <form id="interesseForm" class="space-y-4">
+                    <input type="hidden" id="empreendimento" value="{{ lancamento.titulo }}">
+                    
+                    <div>
+                        <label class="block font-semibold mb-2" style="color: #2c3e50;">
+                            <i class="fas fa-user mr-2" style="color: #d4a574;"></i>Nome
+                        </label>
+                        <input type="text" id="nomeInteresse" required
+                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl transition-all duration-300"
+                               style="outline: none;"
+                               onfocus="this.style.borderColor='#d4a574'; this.style.boxShadow='0 0 0 3px rgba(212, 165, 116, 0.1)'"
+                               onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'"
+                               placeholder="Seu nome">
+                    </div>
+                    
+                    <div>
+                        <label class="block font-semibold mb-2" style="color: #2c3e50;">
+                            <i class="fas fa-envelope mr-2" style="color: #d4a574;"></i>E-mail
+                        </label>
+                        <input type="email" id="emailInteresse" required
+                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl transition-all duration-300"
+                               style="outline: none;"
+                               onfocus="this.style.borderColor='#d4a574'; this.style.boxShadow='0 0 0 3px rgba(212, 165, 116, 0.1)'"
+                               onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'"
+                               placeholder="seu@email.com">
+                    </div>
+                    
+                    <div>
+                        <label class="block font-semibold mb-2" style="color: #2c3e50;">
+                            <i class="fas fa-phone mr-2" style="color: #d4a574;"></i>Telefone
+                        </label>
+                        <input type="tel" id="telefoneInteresse" required
+                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl transition-all duration-300"
+                               style="outline: none;"
+                               onfocus="this.style.borderColor='#d4a574'; this.style.boxShadow='0 0 0 3px rgba(212, 165, 116, 0.1)'"
+                               onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'"
+                               placeholder="(77) 99999-9999">
+                    </div>
+                    
+                    <div>
+                        <label class="block font-semibold mb-2" style="color: #2c3e50;">
+                            <i class="fas fa-comment-dots mr-2" style="color: #d4a574;"></i>Mensagem
+                        </label>
+                        <textarea rows="4" id="mensagemInteresse"
+                                  class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl transition-all duration-300 resize-none"
+                                  style="outline: none;"
+                                  onfocus="this.style.borderColor='#d4a574'; this.style.boxShadow='0 0 0 3px rgba(212, 165, 116, 0.1)'"
+                                  onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'"
+                                  placeholder="Gostaria de mais informações..."></textarea>
+                    </div>
+                    
+                    <button type="submit" 
+                            class="w-full px-6 py-4 rounded-xl font-bold text-lg text-white transition-all duration-300 transform hover:scale-105 hover:shadow-2xl flex items-center justify-center gap-3"
+                            style="background: linear-gradient(135deg, #d4a574 0%, #eacda3 100%);">
+                        <i class="fab fa-whatsapp text-2xl"></i>
+                        <span>Enviar via WhatsApp</span>
+                    </button>
+                </form>
+
+                <!-- Informações de Contato -->
+                <div class="mt-8 pt-8 border-t-2" style="border-color: #eacda3;">
+                    <h4 class="font-bold mb-4 flex items-center" style="color: #2c3e50;">
+                        <i class="fas fa-phone-alt mr-2" style="color: #d4a574;"></i>
+                        Fale Conosco
+                    </h4>
+                    <div class="space-y-3">
+                        <a href="tel:5577999106220" class="flex items-center text-gray-600 hover:text-[#d4a574] transition">
+                            <i class="fas fa-phone w-6" style="color: #d4a574;"></i>
+                            <span>(77) 99910-6220</span>
+                        </a>
+                        <a href="https://wa.me/5577999106220" target="_blank" class="flex items-center text-gray-600 hover:text-[#d4a574] transition">
+                            <i class="fab fa-whatsapp w-6" style="color: #25D366;"></i>
+                            <span>(77) 99910-6220</span>
+                        </a>
+                        <a href="mailto:adm@standard7.com.br" class="flex items-center text-gray-600 hover:text-[#d4a574] transition">
+                            <i class="fas fa-envelope w-6" style="color: #d4a574;"></i>
+                            <span class="text-sm">adm@standard7.com.br</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Lightbox Modal -->
+<div id="lightbox" class="fixed inset-0 bg-black bg-opacity-95 z-50 hidden flex items-center justify-center">
+    <!-- Botão Fechar -->
+    <button onclick="closeLightbox()" class="absolute top-6 right-6 text-white text-4xl hover:text-[#d4a574] transition z-50">
+        <i class="fas fa-times"></i>
+    </button>
+    
+    <!-- Botão Anterior -->
+    <button onclick="changeImage(-1)" class="absolute left-6 text-white text-5xl hover:text-[#d4a574] transition z-50 p-4">
+        <i class="fas fa-chevron-left"></i>
+    </button>
+    
+    <!-- Imagem -->
+    <div class="max-w-7xl max-h-screen p-8">
+        <img id="lightboxImage" src="" alt="" class="max-w-full max-h-[85vh] object-contain mx-auto rounded-lg shadow-2xl">
+        <p id="lightboxCaption" class="text-white text-center mt-4 text-lg font-semibold"></p>
+    </div>
+    
+    <!-- Botão Próximo -->
+    <button onclick="changeImage(1)" class="absolute right-6 text-white text-5xl hover:text-[#d4a574] transition z-50 p-4">
+        <i class="fas fa-chevron-right"></i>
+    </button>
+    
+    <!-- Contador de Imagens -->
+    <div class="absolute bottom-6 left-1/2 transform -translate-x-1/2 text-white text-lg font-semibold bg-black bg-opacity-50 px-6 py-3 rounded-full">
+        <span id="imageCounter"></span>
+    </div>
+</div>
+
+<!-- Botão Voltar -->
+<section class="pb-12" style="background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);">
+    <div class="container mx-auto px-4">
+        <a href="{% url 'core:home' %}#lancamentos" 
+           class="inline-flex items-center font-bold transition-all duration-300 px-6 py-3 rounded-xl hover:shadow-lg"
+           style="color: #2c3e50;"
+           onmouseover="this.style.color='#d4a574'"
+           onmouseout="this.style.color='#2c3e50'">
+            <i class="fas fa-arrow-left mr-2"></i> Voltar para Lançamentos
+        </a>
+    </div>
+</section>
+
+<script>
+    // Array de imagens da galeria
+    const galleryImages = [
+        {% for imagem in lancamento.galeria_imagens.all %}
+        {
+            src: "{{ imagem.imagem.url }}",
+            caption: "{{ imagem.legenda|default:lancamento.titulo|escapejs }}"
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+    
+    let currentImageIndex = 0;
+    
+    // Abrir lightbox
+    function openLightbox(index) {
+        currentImageIndex = index;
+        updateLightboxImage();
+        document.getElementById('lightbox').classList.remove('hidden');
+        document.body.style.overflow = 'hidden'; // Prevenir scroll
+    }
+    
+    // Fechar lightbox
+    function closeLightbox() {
+        document.getElementById('lightbox').classList.add('hidden');
+        document.body.style.overflow = 'auto'; // Restaurar scroll
+    }
+    
+    // Mudar imagem
+    function changeImage(direction) {
+        currentImageIndex += direction;
+        
+        // Loop circular
+        if (currentImageIndex >= galleryImages.length) {
+            currentImageIndex = 0;
+        } else if (currentImageIndex < 0) {
+            currentImageIndex = galleryImages.length - 1;
+        }
+        
+        updateLightboxImage();
+    }
+    
+    // Atualizar imagem do lightbox
+    function updateLightboxImage() {
+        const image = galleryImages[currentImageIndex];
+        document.getElementById('lightboxImage').src = image.src;
+        document.getElementById('lightboxCaption').textContent = image.caption;
+        document.getElementById('imageCounter').textContent = `${currentImageIndex + 1} / ${galleryImages.length}`;
+    }
+    
+    // Navegação por teclado
+    document.addEventListener('keydown', function(e) {
+        const lightbox = document.getElementById('lightbox');
+        if (!lightbox.classList.contains('hidden')) {
+            if (e.key === 'ArrowLeft') {
+                changeImage(-1);
+            } else if (e.key === 'ArrowRight') {
+                changeImage(1);
+            } else if (e.key === 'Escape') {
+                closeLightbox();
+            }
+        }
+    });
+    
+    // Fechar ao clicar fora da imagem
+    document.getElementById('lightbox').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeLightbox();
+        }
+    });
+    
+    // Funcionalidade do formulário de interesse - Enviar para WhatsApp
+    document.getElementById('interesseForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Coletar dados do formulário
+        const nome = document.getElementById('nomeInteresse').value;
+        const email = document.getElementById('emailInteresse').value;
+        const telefone = document.getElementById('telefoneInteresse').value;
+        const mensagem = document.getElementById('mensagemInteresse').value;
+        const empreendimento = document.getElementById('empreendimento').value;
+        
+        // Montar mensagem para WhatsApp
+        const textoWhatsApp = `*Interesse em Empreendimento - Standart 7*%0A%0A` +
+                             `*Empreendimento:* ${encodeURIComponent(empreendimento)}%0A%0A` +
+                             `*Dados do Cliente:*%0A` +
+                             `*Nome:* ${encodeURIComponent(nome)}%0A` +
+                             `*E-mail:* ${encodeURIComponent(email)}%0A` +
+                             `*Telefone:* ${encodeURIComponent(telefone)}%0A%0A` +
+                             `*Mensagem:*%0A${encodeURIComponent(mensagem || 'Cliente interessado em mais informações sobre o empreendimento.')}`;
+        
+        // URL do WhatsApp
+        const whatsappURL = `https://wa.me/5577999106220?text=${textoWhatsApp}`;
+        
+        // Abrir WhatsApp em nova aba
+        window.open(whatsappURL, '_blank');
+        
+        // Opcional: Limpar formulário após envio
+        this.reset();
+    });
+</script>
+{% endblock %}

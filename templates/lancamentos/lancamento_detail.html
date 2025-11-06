@@ -21,6 +21,61 @@
 </style>
 {% endblock %}
 
+{% block extra_js %}
+<script>
+    let currentImageIndex = 0;
+    const images = document.querySelectorAll('.lightbox-image');
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImage = document.getElementById('lightbox-image');
+    const lightboxCaption = document.getElementById('lightbox-caption');
+
+    function openLightbox(index) {
+        currentImageIndex = index;
+        updateLightboxImage();
+        lightbox.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+        lightbox.classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+
+    function updateLightboxImage() {
+        const img = images[currentImageIndex];
+        lightboxImage.src = img.src;
+        lightboxImage.alt = img.alt;
+        lightboxCaption.textContent = img.dataset.title;
+    }
+
+    function nextImage() {
+        currentImageIndex = (currentImageIndex + 1) % images.length;
+        updateLightboxImage();
+    }
+
+    function previousImage() {
+        currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+        updateLightboxImage();
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', function(e) {
+        if (lightbox.classList.contains('hidden')) return;
+        
+        if (e.key === 'Escape') closeLightbox();
+        else if (e.key === 'ArrowRight') nextImage();
+        else if (e.key === 'ArrowLeft') previousImage();
+    });
+
+    // Close lightbox when clicking outside the image
+    lightbox.addEventListener('click', function(e) {
+        if (e.target === lightbox) {
+            closeLightbox();
+        }
+    });
+</script>
+{% endblock %}
+
 {% block content %}
 <!-- Banner Principal -->
 <section class="relative h-96 md:h-[500px] overflow-hidden">
@@ -84,7 +139,8 @@
                         <h2 class="text-3xl font-bold" style="color: #2c3e50;">Galeria de Imagens</h2>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {% for imagem in lancamento.galeria_imagens.all %}
+                        {% with imagens=lancamento.galeria_imagens.all %}
+                        {% for imagem in imagens|slice:":4" %}
                         <div class="relative group overflow-hidden rounded-xl shadow-lg cursor-pointer" onclick="openLightbox({{ forloop.counter0 }})">
                             <img src="{{ imagem.imagem.url }}" 
                                  alt="{{ imagem.legenda|default:lancamento.titulo }}" 
@@ -100,6 +156,35 @@
                             </div>
                         </div>
                         {% endfor %}
+                        {% endwith %}
+                    </div>
+
+                    <!-- Hidden Gallery for Lightbox -->
+                    <div class="hidden">
+                        {% for imagem in lancamento.galeria_imagens.all %}
+                        <img src="{{ imagem.imagem.url }}" 
+                             alt="{{ imagem.legenda|default:lancamento.titulo }}"
+                             data-lightbox="gallery"
+                             data-title="{{ imagem.legenda|default:'' }}"
+                             class="lightbox-image">
+                        {% endfor %}
+                    </div>
+
+                    <!-- Lightbox Modal -->
+                    <div id="lightbox" class="fixed inset-0 z-50 hidden bg-black bg-opacity-90">
+                        <div class="absolute inset-0 flex items-center justify-center p-4">
+                            <button class="absolute top-4 right-4 text-white text-3xl" onclick="closeLightbox()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                            <button class="absolute left-4 top-1/2 transform -translate-y-1/2 text-white text-4xl" onclick="previousImage()">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button class="absolute right-4 top-1/2 transform -translate-y-1/2 text-white text-4xl" onclick="nextImage()">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                            <img id="lightbox-image" src="" alt="" class="max-h-[90vh] max-w-[90vw] object-contain">
+                            <p id="lightbox-caption" class="absolute bottom-4 left-0 right-0 text-center text-white text-lg"></p>
+                        </div>
                     </div>
                 </div>
                 {% endif %}

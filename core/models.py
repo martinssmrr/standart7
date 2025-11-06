@@ -1,6 +1,33 @@
 from django.db import models
 from django.utils.text import slugify
 
+# Modelo para gerenciar a seção CTA de investimento (após os imports)
+class InvestmentCTASection(models.Model):
+    """Modelo para gerenciar a seção CTA de investimento"""
+    titulo = models.CharField('Título Principal', max_length=200, default='Sua próxima grande oportunidade')
+    subtitulo = models.TextField('Subtítulo', default='Está pronto para transformar seu capital em um investimento imobiliário inteligente e altamente lucrativo? Nossa equipe está pronta para apresentar as melhores estratégias e oportunidades, baseadas em nossa profunda análise de mercado.')
+    imagem_fundo = models.ImageField('Imagem de Fundo', upload_to='cta_investimento/', help_text='Imagem de fundo da seção (recomendado: 1920x800px)')
+    texto_botao = models.CharField('Texto do Botão', max_length=100, default='Receber Análise Completa de Investimentos')
+    link_botao = models.URLField('Link do Botão', default='https://api.whatsapp.com/send?phone=5577999106220&text=Ol%C3%A1!%20Gostaria%20de%20receber%20a%20An%C3%A1lise%20Completa%20de%20Investimentos.')
+    ativo = models.BooleanField('Ativo', default=True, help_text='Apenas uma CTA pode estar ativa por vez')
+    data_atualizacao = models.DateTimeField('Última Atualização', auto_now=True)
+
+    class Meta:
+        verbose_name = 'Seção CTA Investimento'
+        verbose_name_plural = 'Seções CTA Investimento'
+        ordering = ['-ativo', '-data_atualizacao']
+
+    def __str__(self):
+        return f'CTA Investimento - {self.titulo[:50]}'
+
+    def save(self, *args, **kwargs):
+        if self.ativo:
+            InvestmentCTASection.objects.filter(ativo=True).exclude(id=self.id).update(ativo=False)
+        super().save(*args, **kwargs)
+
+from django.db import models
+from django.utils.text import slugify
+
 
 class Lancamento(models.Model):
     """Modelo para representar um empreendimento imobiliário"""
@@ -51,6 +78,8 @@ class GaleriaImagem(models.Model):
     legenda = models.CharField('Legenda', max_length=200, blank=True)
     ordem = models.IntegerField('Ordem', default=0,
                                 help_text='Define a ordem de exibição das imagens')
+    destaque_home = models.BooleanField('Exibir na página inicial?', default=False,
+                                     help_text='Marque para exibir esta imagem na página inicial')
     
     class Meta:
         verbose_name = 'Imagem da Galeria'
@@ -59,6 +88,20 @@ class GaleriaImagem(models.Model):
     
     def __str__(self):
         return f'{self.lancamento.titulo} - Imagem {self.id}'
+        
+    def clean(self):
+        from django.core.exceptions import ValidationError
+        if self.destaque_home:
+            # Conta quantas imagens já estão destacadas para este lançamento
+            destacadas = GaleriaImagem.objects.filter(
+                lancamento=self.lancamento,
+                destaque_home=True
+            ).exclude(id=self.id).count()
+            
+            if destacadas >= 3:
+                raise ValidationError({
+                    'destaque_home': 'Apenas 3 imagens podem ser selecionadas para exibição na página inicial.'
+                })
 
 
 class Diferencial(models.Model):
@@ -71,6 +114,8 @@ class Diferencial(models.Model):
                                help_text='Imagem ilustrativa do diferencial')
     ordem = models.IntegerField('Ordem', default=0,
                                 help_text='Define a ordem de exibição')
+    texto_botao = models.CharField('Texto do Botão', max_length=100, blank=True, default='', help_text='Texto exibido no botão do diferencial')
+    link_botao = models.URLField('Link do Botão', blank=True, default='', help_text='URL para onde o botão irá redirecionar')
     ativo = models.BooleanField('Ativo', default=True,
                                 help_text='Define se o diferencial aparece no site')
     

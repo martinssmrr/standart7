@@ -1,3 +1,33 @@
+
+from django.contrib import admin
+from .models import InvestmentCTASection
+
+@admin.register(InvestmentCTASection)
+class InvestmentCTASectionAdmin(admin.ModelAdmin):
+    """Admin para a seção CTA de investimento"""
+    list_display = ['titulo', 'ativo', 'data_atualizacao']
+    list_filter = ['ativo', 'data_atualizacao']
+    search_fields = ['titulo', 'subtitulo']
+
+    fieldsets = (
+        ('Textos', {
+            'fields': ('titulo', 'subtitulo', 'texto_botao', 'link_botao'),
+            'description': 'Textos e botão da seção CTA de investimento'
+        }),
+        ('Imagem', {
+            'fields': ('imagem_fundo',),
+            'description': 'Imagem de fundo da seção (recomendado: 1920x800px)'
+        }),
+        ('Configurações', {
+            'fields': ('ativo',),
+            'description': 'Apenas uma CTA pode estar ativa por vez'
+        }),
+    )
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj:
+            return ['data_atualizacao']
+        return []
 from django.contrib import admin
 from .models import Lancamento, GaleriaImagem, Diferencial, HeroSection, SobreSection
 
@@ -69,6 +99,9 @@ class DiferencialAdmin(admin.ModelAdmin):
         }),
         ('Imagem', {
             'fields': ('imagem',)
+        }),
+        ('Botão', {
+            'fields': ('texto_botao', 'link_botao')
         }),
         ('Ordenação', {
             'fields': ('ordem',)

@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Standart 7 - Lançamentos Imobiliários{% endblock %}
+{% block title %}Standard 7 - Lançamentos Imobiliários{% endblock %}
 
 {% block content %}
 <!-- Hero Section -->
@@ -99,7 +99,8 @@
                 <!-- Galeria de Imagens Alternadas -->
                 <div class="space-y-12">
                     {% if lancamento.galeria_imagens.all %}
-                        {% for imagem in lancamento.galeria_imagens.all %}
+                        {% for imagem in lancamento.galeria_imagens.all|slice:":3" %}
+                            {% if imagem.destaque_home %}
                         <div class="{% cycle 'md:pr-[50%] md:mr-8' 'md:pl-[50%] md:ml-8' %} {% if forloop.counter|divisibleby:2 %}md:text-left{% else %}md:text-right{% endif %}">
                             <div class="group relative rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:scale-[1.02]">
                                 <a href="{% url 'core:lancamento_detail' lancamento.slug %}" class="block">
@@ -141,6 +142,7 @@
                             </div>
                             {% endif %}
                         </div>
+                            {% endif %}
                         {% endfor %}
                     {% else %}
                         <!-- Caso não tenha imagens na galeria, mostra a imagem principal -->
@@ -199,7 +201,26 @@
     </div>
 </section>
 
-<!-- Sobre a Standart7 Section -->
+<!-- CTA Investimento Section -->
+{% if cta_investimento %}
+<section class="relative py-20" style="background-image: url('{{ cta_investimento.imagem_fundo.url }}'); background-size: cover; background-position: center;">
+    <div class="absolute inset-0 bg-black bg-opacity-70"></div>
+    <div class="relative z-10 container mx-auto px-4 flex flex-col items-center text-center">
+        <h1 class="text-3xl md:text-5xl font-bold mb-4 text-white drop-shadow-lg">{{ cta_investimento.titulo }}</h1>
+        <h5 class="text-lg md:text-2xl font-light mb-8 text-gray-100 max-w-3xl mx-auto drop-shadow">
+            {{ cta_investimento.subtitulo }}
+        </h5>
+        <a href="{{ cta_investimento.link_botao }}" 
+           target="_blank" rel="noopener noreferrer"
+           class="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-[#eacda3] to-[#d4a574] text-[#2c3e50] font-bold text-lg rounded-full hover:shadow-2xl transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-[#eacda3]">
+            <i class="fab fa-whatsapp text-2xl"></i>
+            {{ cta_investimento.texto_botao }}
+        </a>
+    </div>
+</section>
+{% endif %}
+
+<!-- Sobre a Standard 7 Section -->
 <section id="sobre" class="py-20" style="background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);">
     <div class="container mx-auto px-4">
         <div class="text-center mb-16">
@@ -219,7 +240,7 @@
                              class="relative rounded-full w-64 h-64 object-cover shadow-2xl border-4 border-white">
                     {% else %}
                         <img src="{% static 'img/camila2.png' %}" 
-                             alt="Foto de Camilla Daianne, fundadora da Standart7" 
+                             alt="Foto de Camilla Daianne, fundadora da Standard 7" 
                              class="relative rounded-full w-64 h-64 object-cover shadow-2xl border-4 border-white">
                     {% endif %}
                 </div>
@@ -245,7 +266,7 @@
                              class="relative rounded-full w-64 h-64 object-cover shadow-2xl border-4 border-white">
                     {% else %}
                         <img src="{% static 'img/marlon.jpg' %}" 
-                             alt="Foto de Marlon Deivison, fundador da Standart7" 
+                             alt="Foto de Marlon Deivison, fundador da Standard 7" 
                              class="relative rounded-full w-64 h-64 object-cover shadow-2xl border-4 border-white">
                     {% endif %}
                 </div>
@@ -264,7 +285,7 @@
                              class="relative rounded-full w-48 h-48 md:w-56 md:h-56 object-cover shadow-2xl border-4 border-white mx-auto">
                     {% else %}
                         <img src="{% static 'img/camila2.png' %}" 
-                             alt="Foto de Camilla Daianne, fundadora da Standart7" 
+                             alt="Foto de Camilla Daianne, fundadora da Standard 7" 
                              class="relative rounded-full w-48 h-48 md:w-56 md:h-56 object-cover shadow-2xl border-4 border-white mx-auto">
                     {% endif %}
                 </div>
@@ -290,7 +311,7 @@
                              class="relative rounded-full w-48 h-48 md:w-56 md:h-56 object-cover shadow-2xl border-4 border-white mx-auto">
                     {% else %}
                         <img src="{% static 'img/marlon.jpg' %}" 
-                             alt="Foto de Marlon Deivison, fundador da Standart7" 
+                             alt="Foto de Marlon Deivison, fundador da Standard 7" 
                              class="relative rounded-full w-48 h-48 md:w-56 md:h-56 object-cover shadow-2xl border-4 border-white mx-auto">
                     {% endif %}
                 </div>
@@ -381,7 +402,7 @@
         const mensagem = document.getElementById('mensagem').value;
         
         // Montar mensagem para WhatsApp
-        const textoWhatsApp = `*Novo Contato - Site Standart 7*%0A%0A` +
+        const textoWhatsApp = `*Novo Contato - Site Standard 7*%0A%0A` +
                              `*Nome:* ${encodeURIComponent(nome)}%0A` +
                              `*E-mail:* ${encodeURIComponent(email)}%0A` +
                              `*Telefone:* ${encodeURIComponent(telefone)}%0A%0A` +

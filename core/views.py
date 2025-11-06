@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView
-from .models import Lancamento, Diferencial, HeroSection, SobreSection
+from django.db import models
+from .models import Lancamento, Diferencial, HeroSection, SobreSection, GaleriaImagem
 
 
 class HomeView(ListView):
@@ -11,13 +12,20 @@ class HomeView(ListView):
     
     def get_queryset(self):
         """Retorna apenas os lançamentos ativos com suas imagens da galeria"""
-        return Lancamento.objects.filter(ativo=True).prefetch_related('galeria_imagens')
+        return Lancamento.objects.filter(ativo=True).prefetch_related(
+            models.Prefetch(
+                'galeria_imagens',
+                queryset=GaleriaImagem.objects.filter(destaque_home=True).order_by('ordem')
+            )
+        )
     
     def get_context_data(self, **kwargs):
-        """Adiciona Hero Section e Seção Sobre ao contexto"""
+        """Adiciona Hero Section, Seção Sobre e CTA Investimento ao contexto"""
         context = super().get_context_data(**kwargs)
         context['hero'] = HeroSection.objects.filter(ativo=True).first()
         context['sobre'] = SobreSection.objects.filter(ativo=True).first()
+        from .models import InvestmentCTASection
+        context['cta_investimento'] = InvestmentCTASection.objects.filter(ativo=True).first()
         return context
 
 
@@ -30,8 +38,8 @@ class LancamentoDetailView(DetailView):
     slug_url_kwarg = 'slug'
     
     def get_queryset(self):
-        """Retorna apenas lançamentos ativos"""
-        return Lancamento.objects.filter(ativo=True)
+        """Retorna apenas lançamentos ativos com imagens da galeria"""
+        return Lancamento.objects.filter(ativo=True).prefetch_related('galeria_imagens')
 
 
 class DiferenciaisView(ListView):

@@ -1,7 +1,23 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Standard 7 - Lançamentos Imobiliários{% endblock %}
+{% block title %}Standard 7 - Investimento Imobiliário Inteligente{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* Navbar sempre transparente na home */
+  #navbar { 
+    background-color: transparent !important; 
+    box-shadow: none !important;
+  }
+  .nav-link {
+    color: white !important;
+  }
+  .nav-link:hover {
+    color: #d4a574 !important;
+  }
+</style>
+{% endblock %}
 
 {% block content %}
 <!-- Hero Section -->
@@ -36,170 +52,277 @@
                style="background: linear-gradient(135deg, #d4a574 0%, #eacda3 100%);">
                 {{ hero.texto_botao|default:"Consultoria Especializada" }}
             </a>
-            <a href="#lancamentos" class="w-full sm:w-auto px-8 py-4 rounded-lg font-semibold transition-all duration-300 hover:scale-105 border-2 hover:bg-opacity-10" style="color: #eacda3; border-color: #eacda3; background-color: rgba(234, 205, 163, 0.05);">
-                Ver Portfólio de Investimentos
+            <a href="{% url 'core:lancamentos' %}" class="w-full sm:w-auto px-8 py-4 rounded-lg font-semibold transition-all duration-300 hover:scale-105 border-2 hover:bg-opacity-10" style="color: #eacda3; border-color: #eacda3; background-color: rgba(234, 205, 163, 0.05);">
+                Lançamentos
             </a>
         </div>
     </div>
     
     <!-- Scroll Indicator -->
     <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10 animate-bounce">
-        <a href="#lancamentos" class="flex flex-col items-center" style="color: #eacda3;">
-            <!-- <span class="text-sm mb-2">Role para explorar</span> -->
+        <a href="#video" class="flex flex-col items-center" style="color: #eacda3;">
             <i class="fas fa-chevron-down text-2xl"></i>
         </a>
     </div>
 </section>
 
-<!-- Linha do Tempo Vertical dos Empreendimentos -->
-<section id="lancamentos" class="relative py-20 overflow-hidden" style="background-color: #f8f9fa;">
-    <!-- Background com Imagem e Overlay -->
-    <div class="absolute inset-0 z-0">
-        <div class="absolute inset-0" style="background-image: url('{% static 'img/lancamentos.png' %}'); background-size: cover; background-position: center; background-repeat: no-repeat; opacity: 0.40;"></div>
-        <div class="absolute inset-0" style="background: linear-gradient(135deg, rgba(255,255,255,0.7) 0%, rgba(248,249,250,0.8) 100%);"></div>
-    </div>
-    
-    <div class="container mx-auto px-4 relative z-10">
-        <div class="text-center mb-16">
-            <h2 class="text-3xl md:text-4xl font-bold mb-4" style="color: #2c3e50;">Nossos Empreendimentos</h2>
-            <p class="text-gray-600 text-lg">Uma jornada de sucesso e inovação no mercado imobiliário</p>
-        </div>
-
-        {% if lancamentos %}
-        <div class="relative max-w-6xl mx-auto">
-            <!-- Linha Central Vertical -->
-            <div class="hidden md:block absolute left-1/2 transform -translate-x-1/2 w-1 h-full" style="background: linear-gradient(180deg, #d4a574 0%, #eacda3 100%);"></div>
+<!-- Seção de Vídeo -->
+{% if home_video %}
+<section id="video" class="py-20 bg-white">
+    <div class="container mx-auto px-4">
+        <div class="max-w-5xl mx-auto">
+            <!-- Título da Seção (opcional) -->
+            {% if home_video.titulo %}
+            <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-12" style="color: #2c3e50;">
+                {{ home_video.titulo }}
+            </h2>
+            {% endif %}
             
-            {% for lancamento in lancamentos %}
-            <div class="relative mb-20 last:mb-0">
-                <!-- Cabeçalho do Empreendimento -->
-                <div class="text-center mb-8 md:mb-12">
-                    <div class="mb-6">
-                        <div class="inline-block px-8 py-4 rounded-2xl shadow-lg mb-4" style="background: linear-gradient(135deg, #d4a574 0%, #eacda3 100%);">
-                            <h3 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white">
-                                {{ lancamento.titulo }}
-                            </h3>
-                        </div>
-                        <div class="w-32 h-1 mx-auto rounded-full" style="background: linear-gradient(135deg, #d4a574 0%, #eacda3 100%);"></div>
-                    </div>
-                    
-                    <div class="flex justify-center items-center gap-4 flex-wrap text-sm">
-                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border-2 shadow-md bg-white" style="border-color: #d4a574;">
-                            <i class="fas fa-map-marker-alt" style="color: #d4a574;"></i>
-                            <span class="font-semibold" style="color: #2c3e50;">{{ lancamento.bairro }}, {{ lancamento.cidade }}</span>
-                        </div>
-                        
-                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border-2 shadow-md bg-white" style="border-color: #d4a574;">
-                            <i class="fas fa-circle text-xs animate-pulse" style="color: #d4a574;"></i>
-                            <span class="font-semibold" style="color: #2c3e50;">{{ lancamento.get_status_display }}</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Galeria de Imagens Alternadas -->
-                <div class="space-y-12">
-                    {% if lancamento.galeria_imagens.all %}
-                        {% for imagem in lancamento.galeria_imagens.all|slice:":3" %}
-                            {% if imagem.destaque_home %}
-                        <div class="{% cycle 'md:pr-[50%] md:mr-8' 'md:pl-[50%] md:ml-8' %} {% if forloop.counter|divisibleby:2 %}md:text-left{% else %}md:text-right{% endif %}">
-                            <div class="group relative rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:scale-[1.02]">
-                                <a href="{% url 'core:lancamento_detail' lancamento.slug %}" class="block">
-                                    <!-- Imagem -->
-                                    <div class="relative overflow-hidden" style="padding-bottom: 66.67%;">
-                                        <img src="{{ imagem.imagem.url }}" 
-                                             alt="{{ imagem.legenda|default:lancamento.titulo }}" 
-                                             class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                             loading="lazy">
-                                        
-                                        <!-- Overlay no Hover -->
-                                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                                        
-                                        <!-- Texto no Hover -->
-                                        <div class="absolute inset-0 flex items-end p-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                            <div class="text-white">
-                                                {% if imagem.legenda %}
-                                                <p class="text-lg font-semibold mb-2">{{ imagem.legenda }}</p>
-                                                {% endif %}
-                                                <div class="flex items-center gap-2 text-sm">
-                                                    <span>Ver detalhes completos</span>
-                                                    <i class="fas fa-arrow-right"></i>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Badge de Número da Imagem -->
-                                    <div class="absolute top-4 {% if forloop.counter|divisibleby:2 %}right-4{% else %}left-4{% endif %} bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full shadow-md">
-                                        <span class="text-xs font-bold" style="color: #d4a574;">{{ forloop.counter }}/{{ lancamento.galeria_imagens.count }}</span>
-                                    </div>
-                                </a>
-                            </div>
-                            
-                            <!-- Legenda (se existir) -->
-                            {% if imagem.legenda %}
-                            <div class="mt-4 px-4">
-                                <p class="text-gray-600 italic">{{ imagem.legenda }}</p>
-                            </div>
-                            {% endif %}
-                        </div>
-                            {% endif %}
-                        {% endfor %}
-                    {% else %}
-                        <!-- Caso não tenha imagens na galeria, mostra a imagem principal -->
-                        <div class="max-w-3xl mx-auto">
-                            <div class="group relative rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500">
-                                <a href="{% url 'core:lancamento_detail' lancamento.slug %}" class="block">
-                                    <div class="relative overflow-hidden" style="padding-bottom: 66.67%;">
-                                        {% if lancamento.imagem_principal %}
-                                        <img src="{{ lancamento.imagem_principal.url }}" 
-                                             alt="{{ lancamento.titulo }}" 
-                                             class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                             loading="lazy">
-                                        {% else %}
-                                        <div class="absolute inset-0 bg-gradient-to-br from-gray-300 to-gray-400 flex items-center justify-center">
-                                            <i class="fas fa-building text-8xl text-gray-500"></i>
-                                        </div>
-                                        {% endif %}
-                                        
-                                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                                        
-                                        <div class="absolute inset-0 flex items-end p-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                            <div class="text-white">
-                                                <p class="text-lg font-semibold mb-2">Imagem Principal</p>
-                                                <div class="flex items-center gap-2 text-sm">
-                                                    <span>Ver detalhes completos</span>
-                                                    <i class="fas fa-arrow-right"></i>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
-                    {% endif %}
-                </div>
-
-                <!-- Link para Ver Mais -->
-                <div class="text-center mt-8">
-                    <a href="{% url 'core:lancamento_detail' lancamento.slug %}" 
-                       class="inline-flex items-center gap-2 px-8 py-4 rounded-lg font-semibold text-white transition-all duration-300 hover:scale-105 hover:shadow-xl" 
-                       style="background: linear-gradient(135deg, #616668 0%, #616668 100%);">
-                        <span>Ver Todos os Detalhes</span>
-                        <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
+            <!-- Vídeo Local -->
+            <div class="relative w-full mb-8" style="padding-bottom: 56.25%; /* Aspect ratio 16:9 */">
+                <video 
+                    id="homeVideo"
+                    class="absolute top-0 left-0 w-full h-full rounded-2xl shadow-2xl object-cover"
+                    {% if home_video.autoplay %}autoplay{% endif %}
+                    controls
+                    playsinline
+                    preload="metadata">
+                    <source src="{% if home_video.video_arquivo %}{{ home_video.video_arquivo.url }}{% else %}{% static 'video/marlon.mov' %}{% endif %}" type="video/mp4">
+                    <source src="{% if home_video.video_arquivo %}{{ home_video.video_arquivo.url }}{% else %}{% static 'video/marlon.mov' %}{% endif %}" type="video/quicktime">
+                    Seu navegador não suporta a reprodução de vídeos.
+                </video>
             </div>
+            
+            <!-- Script para autoplay com som -->
+            {% if home_video.autoplay %}
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const video = document.getElementById('homeVideo');
+                    
+                    // Tentar reproduzir com som
+                    video.muted = false;
+                    video.volume = 1.0;
+                    
+                    const playPromise = video.play();
+                    
+                    if (playPromise !== undefined) {
+                        playPromise.then(() => {
+                            console.log('Vídeo reproduzindo com som!');
+                        }).catch(error => {
+                            // Se falhar com som, tenta com mudo
+                            console.log('Autoplay com som bloqueado, tentando mudo...');
+                            video.muted = true;
+                            video.play().catch(e => {
+                                console.error('Falha ao reproduzir vídeo:', e);
+                            });
+                        });
+                    }
+                });
+            </script>
+            {% endif %}
+            
+            <!-- Botão WhatsApp -->
+            <div class="text-center">
+                <a href="{{ home_video.link_whatsapp }}" 
+                   target="_blank" 
+                   rel="noopener noreferrer"
+                   class="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-green-500 to-green-600 text-white font-bold text-lg rounded-full hover:shadow-2xl transform hover:scale-105 transition-all duration-300">
+                    <i class="fab fa-whatsapp text-2xl"></i>
+                    {{ home_video.texto_botao }}
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Diferenciais Section -->
+<section id="diferenciais" class="py-20 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl md:text-5xl font-bold mb-4" style="color: #2c3e50;">Diferenciais Standart 7</h2>
+            <p class="text-gray-600 text-lg">Excelência e inovação em cada detalhe</p>
+            <div class="w-24 h-1 mx-auto mt-4" style="background: linear-gradient(135deg, #d4a574 0%, #eacda3 100%);"></div>
+        </div>
+
+        {% if diferenciais %}
+            {% for diferencial in diferenciais %}
+                <div class="mb-20 {% if not forloop.last %}pb-20 border-b border-gray-200{% endif %}">
+                    <div class="flex flex-col {% cycle 'lg:flex-row' 'lg:flex-row-reverse' %} items-center gap-12">
+                        <!-- Imagem -->
+                        <div class="w-full lg:w-1/2 flex justify-center">
+                            <div class="relative group overflow-hidden rounded-2xl shadow-2xl" style="width: 600px; height: 700px;">
+                                {% if diferencial.imagem %}
+                                    <img 
+                                        src="{{ diferencial.imagem.url }}" 
+                                        alt="{{ diferencial.titulo }}"
+                                        class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                    >
+                                {% else %}
+                                    <div class="w-full h-full bg-gradient-to-br from-[#eacda3] to-[#d4a574] flex items-center justify-center">
+                                        <i class="fas fa-image text-white text-6xl"></i>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Texto -->
+                        <div class="w-full lg:w-1/2">
+                            <div class="space-y-6">
+                                <h2 class="text-4xl font-bold text-[#2c3e50] leading-tight">
+                                    {{ diferencial.titulo }}
+                                </h2>
+                                
+                                <div class="h-1 w-24 bg-gradient-to-r from-[#eacda3] to-[#d4a574] rounded-full"></div>
+                                
+                                <div class="text-lg text-gray-700 leading-relaxed space-y-4">
+                                    {{ diferencial.descricao|linebreaks }}
+                                </div>
+
+                                {% if diferencial.texto_botao and diferencial.link_botao %}
+                                <a href="{{ diferencial.link_botao }}" target="_blank" class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#eacda3] to-[#d4a574] rounded-full text-white font-semibold shadow-lg hover:scale-105 transition-transform duration-300">
+                                    <i class="fab fa-whatsapp"></i>
+                                    <span>{{ diferencial.texto_botao }}</span>
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
             {% endfor %}
-        </div>
         {% else %}
-        <div class="text-center py-20">
-            <i class="fas fa-home text-8xl mb-6" style="color: #d4a574;"></i>
-            <h3 class="text-2xl font-bold text-gray-800 mb-3">Em Breve, Novos Empreendimentos</h3>
-            <p class="text-gray-600 text-lg">Estamos preparando lançamentos exclusivos para você.</p>
-        </div>
+            <div class="text-center py-20">
+                <i class="fas fa-info-circle text-6xl text-gray-400 mb-4"></i>
+                <h3 class="text-2xl font-semibold text-gray-600 mb-2">Nenhum diferencial cadastrado</h3>
+                <p class="text-gray-500">Em breve apresentaremos nossos diferenciais aqui.</p>
+            </div>
         {% endif %}
     </div>
 </section>
+
+<!-- Depoimentos Section -->
+{% if depoimentos %}
+<section class="py-20" style="background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl md:text-5xl font-bold mb-4" style="color: #2c3e50;">O que dizem nossos clientes</h2>
+            <div class="w-24 h-1 mx-auto mb-4" style="background: linear-gradient(135deg, #d4a574 0%, #eacda3 100%);"></div>
+            <p class="text-gray-600 text-lg">Depoimentos de quem confia em nosso trabalho</p>
+        </div>
+
+        <!-- Container do Carrossel -->
+        <div class="relative max-w-7xl mx-auto">
+            <!-- Botão Anterior -->
+            <button onclick="scrollDepoimentos(-1)" class="hidden lg:block absolute left-0 top-1/2 -translate-y-1/2 -translate-x-6 z-10 w-12 h-12 rounded-full bg-white shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-110" style="color: #d4a574;">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+
+            <!-- Depoimentos Container -->
+            <div id="depoimentos-container" class="overflow-x-auto scroll-smooth hide-scrollbar">
+                <div class="flex gap-6 pb-4">
+                    {% for depoimento in depoimentos %}
+                    <div class="flex-shrink-0 w-full lg:w-[calc(33.333%-1rem)]">
+                        <div class="bg-white rounded-2xl shadow-xl p-8 h-full flex flex-col transition-all duration-300 hover:shadow-2xl hover:-translate-y-2">
+                            <!-- Aspas -->
+                            <div class="mb-4">
+                                <i class="fas fa-quote-left text-4xl opacity-20" style="color: #d4a574;"></i>
+                            </div>
+                            
+                            <!-- Conteúdo do Depoimento -->
+                            <div class="flex-grow mb-6">
+                                <p class="text-gray-700 leading-relaxed italic">{{ depoimento.conteudo }}</p>
+                            </div>
+                            
+                            <!-- Informações do Cliente -->
+                            <div class="flex items-center gap-4 pt-6 border-t border-gray-200">
+                                <div class="relative flex-shrink-0">
+                                    {% if depoimento.foto %}
+                                        <img src="{{ depoimento.foto.url }}" alt="{{ depoimento.nome }}" class="w-16 h-16 rounded-full object-cover border-2" style="border-color: #d4a574;">
+                                    {% else %}
+                                        <div class="w-16 h-16 rounded-full bg-gradient-to-br from-[#eacda3] to-[#d4a574] flex items-center justify-center text-white font-bold text-xl">
+                                            {{ depoimento.nome|slice:":1" }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-gray-900">{{ depoimento.nome }}</h4>
+                                    <div class="flex gap-1 mt-1">
+                                        <i class="fas fa-star text-yellow-400 text-sm"></i>
+                                        <i class="fas fa-star text-yellow-400 text-sm"></i>
+                                        <i class="fas fa-star text-yellow-400 text-sm"></i>
+                                        <i class="fas fa-star text-yellow-400 text-sm"></i>
+                                        <i class="fas fa-star text-yellow-400 text-sm"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Botão Próximo -->
+            <button onclick="scrollDepoimentos(1)" class="hidden lg:block absolute right-0 top-1/2 -translate-y-1/2 translate-x-6 z-10 w-12 h-12 rounded-full bg-white shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-110" style="color: #d4a574;">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+
+        <!-- Indicadores (Dots) -->
+        <div class="flex justify-center gap-2 mt-8">
+            {% for depoimento in depoimentos %}
+            <button onclick="scrollToDepoimento({{ forloop.counter0 }})" class="depoimento-dot w-3 h-3 rounded-full transition-all duration-300 {% if forloop.first %}bg-[#d4a574]{% else %}bg-gray-300{% endif %}" data-index="{{ forloop.counter0 }}"></button>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<style>
+    .hide-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+    .hide-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+</style>
+
+<script>
+    function scrollDepoimentos(direction) {
+        const container = document.getElementById('depoimentos-container');
+        const cardWidth = container.querySelector('div > div').offsetWidth;
+        const scrollAmount = (cardWidth + 24) * direction; // 24px é o gap
+        container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+        updateDots();
+    }
+
+    function scrollToDepoimento(index) {
+        const container = document.getElementById('depoimentos-container');
+        const cardWidth = container.querySelector('div > div').offsetWidth;
+        container.scrollTo({ left: (cardWidth + 24) * index, behavior: 'smooth' });
+        updateDots();
+    }
+
+    function updateDots() {
+        const container = document.getElementById('depoimentos-container');
+        const scrollLeft = container.scrollLeft;
+        const cardWidth = container.querySelector('div > div').offsetWidth + 24;
+        const currentIndex = Math.round(scrollLeft / cardWidth);
+        
+        document.querySelectorAll('.depoimento-dot').forEach((dot, index) => {
+            if (index === currentIndex) {
+                dot.classList.remove('bg-gray-300');
+                dot.classList.add('bg-[#d4a574]');
+            } else {
+                dot.classList.remove('bg-[#d4a574]');
+                dot.classList.add('bg-gray-300');
+            }
+        });
+    }
+
+    // Atualizar dots no scroll
+    document.getElementById('depoimentos-container')?.addEventListener('scroll', updateDots);
+</script>
+{% endif %}
 
 <!-- CTA Investimento Section -->
 {% if cta_investimento %}

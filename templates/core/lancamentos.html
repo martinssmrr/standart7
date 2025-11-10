@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Lançamentos - Standart 7{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Força a navbar a ter fundo branco e links pretos nesta página */
+    #navbar {
+        background-color: white !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+    }
+    
+    .nav-link {
+        color: #1f2937 !important;
+    }
+    
+    .nav-link:hover {
+        color: #d4a574 !important;
+    }
+</style>
+{% endblock %}
+
+</style>        box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;        box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+
+{% endblock %}
+
+    }    }
+
+{% block content %}
+
+<!-- Linha do Tempo Vertical dos Empreendimentos -->        
+
+<section id="lancamentos" class="relative py-20 overflow-hidden" style="background-color: #f8f9fa; margin-top: 100px;">
+
+    <!-- Background com Imagem e Overlay -->    .nav-link {    .nav-link {
+
+    <div class="absolute inset-0 z-0">
+
+        <div class="absolute inset-0" style="background-image: url('{% static 'img/lancamentos.png' %}'); background-size: cover; background-position: center; background-repeat: no-repeat; opacity: 0.40;"></div>        color: #1f2937 !important;        color: #1f2937 !important;
+
+        <div class="absolute inset-0" style="background: linear-gradient(135deg, rgba(255,255,255,0.7) 0%, rgba(248,249,250,0.8) 100%);"></div>
+
+    </div>    }    }
+
+    
+
+    <div class="container mx-auto px-4 relative z-10">        
+
+        <div class="text-center mb-16">
+
+            <h2 class="text-3xl md:text-4xl font-bold mb-4" style="color: #2c3e50;">Nossos Empreendimentos</h2>    .nav-link:hover {    .nav-link:hover {
+
+            <p class="text-gray-600 text-lg">Uma jornada de sucesso e inovação no mercado imobiliário</p>
+
+        </div>        color: #d4a574 !important;        color: #d4a574 !important;
+
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Lançamentos - Standart 7{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* Pequenas customizações locais */
+  #navbar { background-color: white !important; }
+  .card img { width: 100%; height: auto; display: block; }
+  .cards { display:grid; grid-template-columns: repeat(auto-fill,minmax(280px,1fr)); gap:1.25rem; }
+  .card { border-radius: .5rem; overflow: hidden; box-shadow: 0 6px 18px rgba(0,0,0,0.06); background: #fff; }
+  .card-body { padding: 1rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<section id="lancamentos" class="py-12">
+  <div class="container mx-auto px-4">
+    <div class="text-center mb-8">
+      <h1 class="text-3xl font-bold">Nossos Empreendimentos</h1>
+      <p class="text-gray-600">Conheça os lançamentos e oportunidades disponíveis.</p>
+    </div>
+
+    {% if lancamentos and lancamentos|length > 0 %}
+      <div class="cards">
+        {% for lancamento in lancamentos %}
+          <article class="card">
+            <a href="{% url 'core:lancamento_detail' lancamento.slug %}">
+              {% if lancamento.imagem_principal %}
+                <img src="{{ lancamento.imagem_principal.url }}" alt="{{ lancamento.titulo }}">
+              {% endif %}
+              <div class="card-body">
+                <h3 class="text-xl font-semibold mb-1">{{ lancamento.titulo }}</h3>
+                <p class="text-sm text-gray-600 mb-2">{{ lancamento.bairro }}, {{ lancamento.cidade }}</p>
+                <div class="text-sm font-medium text-[#d4a574]">{{ lancamento.get_status_display }}</div>
+              </div>
+            </a>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="text-center py-12">
+        <i class="fas fa-home text-6xl mb-6" style="color: #d4a574;"></i>
+        <h2 class="text-2xl font-bold mb-2">Em breve, novos empreendimentos</h2>
+        <p class="text-gray-600">Estamos preparando lançamentos exclusivos para você.</p>
+      </div>
+    {% endif %}
+
+  </div>
+</section>
+
+{% endblock %}
+            <i class="fas fa-home text-8xl mb-6" style="color: #d4a574;"></i>
+            <h3 class="text-2xl font-bold text-gray-800 mb-3">Em Breve, Novos Empreendimentos</h3>
+            <p class="text-gray-600 text-lg">Estamos preparando lançamentos exclusivos para você.</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-20 bg-gradient-to-r from-[#eacda3] to-[#d4a574]">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-4xl font-bold text-white mb-6">Encontre o investimento perfeito para você</h2>
+        <p class="text-xl text-white/90 mb-8">Entre em contato e descubra as melhores oportunidades</p>
+        <a
+            target="_blank"
+            href="https://wa.me/5577999106220?text=Olá! Gostaria de saber mais sobre os lançamentos da Standart 7."
+            class="inline-flex items-center gap-3 px-8 py-4 bg-white text-[#d4a574] font-bold text-lg rounded-full hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+        >
+            <i class="fab fa-whatsapp text-2xl"></i>
+            Fale Conosco
+        </a>
+    </div>
+</section>
+{% endblock %}

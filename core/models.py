@@ -13,8 +13,8 @@ class InvestmentCTASection(models.Model):
     data_atualizacao = models.DateTimeField('Última Atualização', auto_now=True)
 
     class Meta:
-        verbose_name = 'Seção CTA Investimento'
-        verbose_name_plural = 'Seções CTA Investimento'
+        verbose_name = 'Chamada para Investimento (Home)'
+        verbose_name_plural = 'Chamadas para Investimento (Home)'
         ordering = ['-ativo', '-data_atualizacao']
 
     def __str__(self):
@@ -54,8 +54,8 @@ class Lancamento(models.Model):
                                 help_text='Define se o lançamento aparece no site')
     
     class Meta:
-        verbose_name = 'Lançamento'
-        verbose_name_plural = 'Lançamentos'
+        verbose_name = 'Empreendimento / Lançamento'
+        verbose_name_plural = 'Empreendimentos / Lançamentos'
         ordering = ['-data_criacao']
     
     def __str__(self):
@@ -82,8 +82,8 @@ class GaleriaImagem(models.Model):
                                      help_text='Marque para exibir esta imagem na página inicial')
     
     class Meta:
-        verbose_name = 'Imagem da Galeria'
-        verbose_name_plural = 'Imagens da Galeria'
+        verbose_name = 'Imagem do Empreendimento'
+        verbose_name_plural = 'Imagens dos Empreendimentos'
         ordering = ['ordem', 'id']
     
     def __str__(self):
@@ -120,8 +120,8 @@ class Diferencial(models.Model):
                                 help_text='Define se o diferencial aparece no site')
     
     class Meta:
-        verbose_name = 'Diferencial'
-        verbose_name_plural = 'Diferenciais'
+        verbose_name = 'Diferencial da Empresa'
+        verbose_name_plural = 'Diferenciais da Empresa'
         ordering = ['ordem', 'id']
     
     def __str__(self):
@@ -144,8 +144,8 @@ class HeroSection(models.Model):
     data_atualizacao = models.DateTimeField('Última Atualização', auto_now=True)
     
     class Meta:
-        verbose_name = 'Hero Section'
-        verbose_name_plural = 'Hero Sections'
+        verbose_name = 'Banner Principal (Home)'
+        verbose_name_plural = 'Banners Principais (Home)'
         ordering = ['-ativo', '-data_atualizacao']
     
     def __str__(self):
@@ -185,8 +185,8 @@ class SobreSection(models.Model):
     data_atualizacao = models.DateTimeField('Última Atualização', auto_now=True)
     
     class Meta:
-        verbose_name = 'Seção Sobre (Nossa História)'
-        verbose_name_plural = 'Seções Sobre (Nossa História)'
+        verbose_name = 'Nossa História (Home)'
+        verbose_name_plural = 'Nossa História (Home)'
         ordering = ['-ativo', '-data_atualizacao']
     
     def __str__(self):
@@ -196,4 +196,97 @@ class SobreSection(models.Model):
         """Garante que apenas uma Seção Sobre esteja ativa"""
         if self.ativo:
             SobreSection.objects.filter(ativo=True).exclude(id=self.id).update(ativo=False)
+        super().save(*args, **kwargs)
+
+
+class Depoimento(models.Model):
+    """Modelo para depoimentos de clientes"""
+    
+    nome = models.CharField('Nome do Cliente', max_length=200)
+    foto = models.ImageField('Foto do Cliente', upload_to='depoimentos/',
+                            help_text='Foto do cliente (recomendado: 300x300px)')
+    conteudo = models.TextField('Depoimento',
+                                help_text='Texto do depoimento do cliente')
+    ordem = models.IntegerField('Ordem', default=0,
+                               help_text='Define a ordem de exibição dos depoimentos')
+    ativo = models.BooleanField('Ativo', default=True,
+                                help_text='Define se o depoimento aparece no site')
+    data_criacao = models.DateTimeField('Data de Criação', auto_now_add=True)
+    
+    class Meta:
+        verbose_name = 'Depoimento de Cliente'
+        verbose_name_plural = 'Depoimentos de Clientes'
+        ordering = ['ordem', '-data_criacao']
+    
+    def __str__(self):
+        return f'Depoimento - {self.nome}'
+
+
+class LancamentosHero(models.Model):
+    """Modelo para gerenciar o background hero da página de lançamentos"""
+    
+    titulo = models.CharField('Título', max_length=200, default='Nossos Empreendimentos')
+    subtitulo = models.CharField('Subtítulo', max_length=300, 
+                                default='Conheça os lançamentos e oportunidades disponíveis')
+    imagem_fundo = models.ImageField('Imagem de Fundo', upload_to='hero/',
+                                     help_text='Imagem de fundo da seção hero (recomendado: 1920x1080px)')
+    opacidade = models.IntegerField('Opacidade do Overlay Branco (%)', default=60,
+                                   help_text='Opacidade da camada BRANCA sobre a imagem (0=transparente, 100=branco total)')
+    ativo = models.BooleanField('Ativo', default=True,
+                                help_text='Apenas um hero pode estar ativo por vez')
+    data_criacao = models.DateTimeField('Data de Criação', auto_now_add=True)
+    data_atualizacao = models.DateTimeField('Última Atualização', auto_now=True)
+    
+    class Meta:
+        verbose_name = 'Banner da Página Lançamentos'
+        verbose_name_plural = 'Banners da Página Lançamentos'
+        ordering = ['-ativo', '-data_atualizacao']
+    
+    def __str__(self):
+        return f'{self.titulo} - {"Ativo" if self.ativo else "Inativo"}'
+    
+    def save(self, *args, **kwargs):
+        """Garante que apenas um hero esteja ativo por vez"""
+        if self.ativo:
+            LancamentosHero.objects.filter(ativo=True).exclude(id=self.id).update(ativo=False)
+        super().save(*args, **kwargs)
+    
+    def clean(self):
+        """Validação personalizada"""
+        from django.core.exceptions import ValidationError
+        if self.opacidade < 0 or self.opacidade > 100:
+            raise ValidationError({'opacidade': 'A opacidade deve estar entre 0 e 100.'})
+
+
+class LancamentosVideo(models.Model):
+    """Modelo para gerenciar o vídeo da página HOME"""
+    
+    titulo = models.CharField('Título da Seção', max_length=200, blank=True,
+                             default='Conheça Nossos Empreendimentos')
+    video_arquivo = models.FileField('Arquivo de Vídeo', upload_to='videos/', blank=True, null=True,
+                                    help_text='Formatos suportados: MP4, WebM, OGG, MOV')
+    texto_botao = models.CharField('Texto do Botão WhatsApp', max_length=100,
+                                  default='Falar com Especialista')
+    link_whatsapp = models.URLField('Link do WhatsApp',
+                                   default='https://wa.me/5577999106220?text=Ol%C3%A1%2C%20gostaria%20de%20saber%20mais%20sobre%20os%20lan%C3%A7amentos.',
+                                   help_text='Link do WhatsApp com mensagem pré-definida')
+    ativo = models.BooleanField('Ativo', default=True,
+                                help_text='Apenas um vídeo pode estar ativo por vez')
+    autoplay = models.BooleanField('Reprodução Automática', default=True,
+                                   help_text='Iniciar vídeo automaticamente quando entrar na página')
+    data_criacao = models.DateTimeField('Data de Criação', auto_now_add=True)
+    data_atualizacao = models.DateTimeField('Última Atualização', auto_now=True)
+    
+    class Meta:
+        verbose_name = 'Vídeo da Página Home'
+        verbose_name_plural = 'Vídeos da Página Home'
+        ordering = ['-ativo', '-data_atualizacao']
+    
+    def __str__(self):
+        return f'{self.titulo} - {"Ativo" if self.ativo else "Inativo"}'
+    
+    def save(self, *args, **kwargs):
+        """Garante que apenas um vídeo esteja ativo por vez"""
+        if self.ativo:
+            LancamentosVideo.objects.filter(ativo=True).exclude(id=self.id).update(ativo=False)
         super().save(*args, **kwargs)

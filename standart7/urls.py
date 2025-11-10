@@ -25,7 +25,7 @@ urlpatterns = [
     path("", include('core.urls')),
 ]
 
-# Servir arquivos de media durante o desenvolvimento
+# Servir arquivos de media e static durante o desenvolvimento
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS[0] if settings.STATICFILES_DIRS else None)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

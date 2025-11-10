@@ -1,6 +1,11 @@
-
 from django.contrib import admin
-from .models import InvestmentCTASection
+from .models import InvestmentCTASection, Lancamento, GaleriaImagem, Diferencial, HeroSection, SobreSection, Depoimento, LancamentosHero, LancamentosVideo
+
+
+# Configuração do Admin Site - Nomes amigáveis
+admin.site.site_header = 'Administração Standart 7'
+admin.site.site_title = 'Standart 7'
+admin.site.index_title = 'Painel de Gerenciamento do Site'
 
 @admin.register(InvestmentCTASection)
 class InvestmentCTASectionAdmin(admin.ModelAdmin):
@@ -10,17 +15,17 @@ class InvestmentCTASectionAdmin(admin.ModelAdmin):
     search_fields = ['titulo', 'subtitulo']
 
     fieldsets = (
-        ('Textos', {
+        ('Textos da Chamada', {
             'fields': ('titulo', 'subtitulo', 'texto_botao', 'link_botao'),
-            'description': 'Textos e botão da seção CTA de investimento'
+            'description': 'Textos e botão da seção de chamada para investimento'
         }),
-        ('Imagem', {
+        ('Imagem de Fundo', {
             'fields': ('imagem_fundo',),
             'description': 'Imagem de fundo da seção (recomendado: 1920x800px)'
         }),
-        ('Configurações', {
+        ('Status', {
             'fields': ('ativo',),
-            'description': 'Apenas uma CTA pode estar ativa por vez'
+            'description': 'Apenas uma seção pode estar ativa por vez'
         }),
     )
 
@@ -28,8 +33,12 @@ class InvestmentCTASectionAdmin(admin.ModelAdmin):
         if obj:
             return ['data_atualizacao']
         return []
+    
+    class Meta:
+        verbose_name = 'Chamada para Investimento (Home)'
+        verbose_name_plural = 'Chamadas para Investimento (Home)'
 from django.contrib import admin
-from .models import Lancamento, GaleriaImagem, Diferencial, HeroSection, SobreSection
+from .models import Lancamento, GaleriaImagem, Diferencial, HeroSection, SobreSection, Depoimento, LancamentosHero
 
 
 class GaleriaImagemInline(admin.TabularInline):
@@ -170,4 +179,100 @@ class SobreSectionAdmin(admin.ModelAdmin):
         """Define campos somente leitura"""
         if obj:
             return ['data_atualizacao']
+        return []
+
+
+@admin.register(Depoimento)
+class DepoimentoAdmin(admin.ModelAdmin):
+    """Configuração do painel de administração para Depoimentos"""
+    
+    list_display = ['nome', 'ordem', 'ativo', 'data_criacao']
+    list_filter = ['ativo', 'data_criacao']
+    search_fields = ['nome', 'conteudo']
+    list_editable = ['ordem', 'ativo']
+    date_hierarchy = 'data_criacao'
+    
+    fieldsets = (
+        ('Informações do Cliente', {
+            'fields': ('nome', 'foto'),
+            'description': 'Nome e foto do cliente'
+        }),
+        ('Depoimento', {
+            'fields': ('conteudo',),
+            'description': 'Texto do depoimento'
+        }),
+        ('Configurações', {
+            'fields': ('ordem', 'ativo'),
+            'description': 'Ordem de exibição e status'
+        }),
+    )
+    
+    def get_readonly_fields(self, request, obj=None):
+        """Define campos somente leitura"""
+        if obj:
+            return ['data_criacao']
+        return []
+
+
+@admin.register(LancamentosHero)
+class LancamentosHeroAdmin(admin.ModelAdmin):
+    """Admin para o Hero da página de lançamentos"""
+    list_display = ['titulo', 'opacidade', 'ativo', 'data_atualizacao']
+    list_filter = ['ativo', 'data_atualizacao']
+    search_fields = ['titulo', 'subtitulo']
+    list_editable = ['ativo']
+    
+    fieldsets = (
+        ('Textos', {
+            'fields': ('titulo', 'subtitulo'),
+            'description': 'Título e subtítulo exibidos no hero'
+        }),
+        ('Imagem de Fundo', {
+            'fields': ('imagem_fundo',),
+            'description': 'Imagem de fundo do hero (recomendado: 1920x1080px para tela cheia)'
+        }),
+        ('Configurações Visuais', {
+            'fields': ('opacidade',),
+            'description': 'Opacidade do overlay BRANCO sobre a imagem (0=transparente/imagem visível, 100=branco total)'
+        }),
+        ('Status', {
+            'fields': ('ativo',),
+            'description': 'Apenas um hero pode estar ativo por vez'
+        }),
+    )
+    
+    def get_readonly_fields(self, request, obj=None):
+        """Define campos somente leitura"""
+        if obj:
+            return ['data_criacao', 'data_atualizacao']
+        return []
+
+
+@admin.register(LancamentosVideo)
+class LancamentosVideoAdmin(admin.ModelAdmin):
+    """Admin para o Vídeo da página HOME"""
+    list_display = ['titulo', 'ativo', 'autoplay', 'data_atualizacao']
+    list_filter = ['ativo', 'autoplay', 'data_atualizacao']
+    search_fields = ['titulo']
+    list_editable = ['ativo', 'autoplay']
+    
+    fieldsets = (
+        ('Conteúdo do Vídeo', {
+            'fields': ('titulo', 'video_arquivo', 'autoplay'),
+            'description': 'Faça upload do arquivo de vídeo (MP4, MOV, WebM, OGG)'
+        }),
+        ('Botão WhatsApp', {
+            'fields': ('texto_botao', 'link_whatsapp'),
+            'description': 'Botão de contato exibido abaixo do vídeo'
+        }),
+        ('Status', {
+            'fields': ('ativo',),
+            'description': 'Apenas um vídeo pode estar ativo por vez'
+        }),
+    )
+    
+    def get_readonly_fields(self, request, obj=None):
+        """Define campos somente leitura"""
+        if obj:
+            return ['data_criacao', 'data_atualizacao']
         return []

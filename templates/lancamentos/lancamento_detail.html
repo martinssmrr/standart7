@@ -18,60 +18,74 @@
     .nav-link:hover {
         color: #d4a574 !important;
     }
+    
+    .btn-outline-light {
+        color: #1f2937 !important;
+        border-color: #1f2937 !important;
+    }
+    
+    .btn-outline-light:hover {
+        background-color: #1f2937 !important;
+        color: white !important;
+    }
 </style>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-    let currentImageIndex = 0;
-    const images = document.querySelectorAll('.lightbox-image');
-    const lightbox = document.getElementById('lightbox');
-    const lightboxImage = document.getElementById('lightbox-image');
-    const lightboxCaption = document.getElementById('lightbox-caption');
+    document.addEventListener('DOMContentLoaded', function() {
+        let currentImageIndex = 0;
+        const images = document.querySelectorAll('.lightbox-image');
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImage = document.getElementById('lightbox-image');
+        const lightboxCaption = document.getElementById('lightbox-caption');
 
-    function openLightbox(index) {
-        currentImageIndex = index;
-        updateLightboxImage();
-        lightbox.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-    }
-
-    function closeLightbox() {
-        lightbox.classList.add('hidden');
-        document.body.style.overflow = '';
-    }
-
-    function updateLightboxImage() {
-        const img = images[currentImageIndex];
-        lightboxImage.src = img.src;
-        lightboxImage.alt = img.alt;
-        lightboxCaption.textContent = img.dataset.title;
-    }
-
-    function nextImage() {
-        currentImageIndex = (currentImageIndex + 1) % images.length;
-        updateLightboxImage();
-    }
-
-    function previousImage() {
-        currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
-        updateLightboxImage();
-    }
-
-    // Keyboard navigation
-    document.addEventListener('keydown', function(e) {
-        if (lightbox.classList.contains('hidden')) return;
-        
-        if (e.key === 'Escape') closeLightbox();
-        else if (e.key === 'ArrowRight') nextImage();
-        else if (e.key === 'ArrowLeft') previousImage();
-    });
-
-    // Close lightbox when clicking outside the image
-    lightbox.addEventListener('click', function(e) {
-        if (e.target === lightbox) {
-            closeLightbox();
+        window.openLightbox = function(index) {
+            currentImageIndex = index;
+            updateLightboxImage();
+            lightbox.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
         }
+
+        window.closeLightbox = function() {
+            lightbox.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        function updateLightboxImage() {
+            const img = images[currentImageIndex];
+            if (img) {
+                lightboxImage.src = img.src;
+                lightboxImage.alt = img.alt;
+                lightboxCaption.textContent = img.dataset.title || '';
+            }
+        }
+
+        window.nextImage = function() {
+            currentImageIndex = (currentImageIndex + 1) % images.length;
+            updateLightboxImage();
+        }
+
+        window.previousImage = function() {
+            currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+            updateLightboxImage();
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (lightbox.classList.contains('hidden')) return;
+            
+            if (e.key === 'Escape') window.closeLightbox();
+            else if (e.key === 'ArrowRight') window.nextImage();
+            else if (e.key === 'ArrowLeft') window.previousImage();
+        });
+
+        // Close lightbox when clicking outside the image
+        lightbox.addEventListener('click', function(e) {
+            if (e.target === lightbox) {
+                window.closeLightbox();
+            }
+        });
     });
 </script>
 {% endblock %}

@@ -36,9 +36,16 @@
     
     <!-- Content -->
     <div class="relative z-20 container mx-auto px-4 text-center py-20">
-        <h1 class="text-4xl md:text-5xl lg:text-7xl font-bold mb-4 md:mb-6" style="color: #eacda3;">
-            {{ hero.titulo|default:"Seu Próximo Investimento de Sucesso" }}
+        <h1 class="text-4xl md:text-5xl lg:text-7xl font-bold mb-2 md:mb-3" style="color: #eacda3;">
+            {{ hero.titulo|default:"Seu Próximo Investimento" }}
         </h1>
+        
+        {% if hero.texto_destaque %}
+        <div class="text-5xl md:text-6xl lg:text-8xl font-black mb-4 md:mb-6 tracking-wider" style="color: #d4a574; text-shadow: 3px 3px 10px rgba(0,0,0,0.7); letter-spacing: 0.1em;">
+            {{ hero.texto_destaque }}
+        </div>
+        {% endif %}
+        
         <h4 class="text-lg md:text-xl lg:text-2xl font-light mb-8 md:mb-12 max-w-4xl mx-auto leading-relaxed" style="color: #eacda3;">
             {{ hero.subtitulo|default:"Dados comprovam: a valorização que você busca, no lugar certo e no momento certo." }}
         </h4>

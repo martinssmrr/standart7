@@ -128,7 +128,7 @@ class HeroSectionAdmin(admin.ModelAdmin):
     
     fieldsets = (
         ('Textos', {
-            'fields': ('titulo', 'subtitulo', 'texto_botao'),
+            'fields': ('titulo', 'texto_destaque', 'subtitulo', 'texto_botao'),
             'description': 'Textos exibidos na seção principal do site'
         }),
         ('Imagem', {

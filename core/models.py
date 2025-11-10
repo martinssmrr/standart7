@@ -133,6 +133,8 @@ class HeroSection(models.Model):
     
     titulo = models.CharField('Título Principal', max_length=200,
                              default='Investimento Inteligente em Imóveis')
+    texto_destaque = models.CharField('Texto de Destaque', max_length=100, blank=True,
+                                     help_text='Texto em destaque entre o título e subtítulo (ex: "DE SUCESSO")')
     subtitulo = models.CharField('Subtítulo', max_length=300,
                                 default='Transforme seu capital em patrimônio com segurança e rentabilidade')
     texto_botao = models.CharField('Texto do Botão', max_length=100,
